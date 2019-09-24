@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import './App.css'
 
 const AppContext = React.createContext(undefined, undefined);
@@ -102,24 +102,47 @@ const ProductTable = () => {
 
 const SearchBar = () => {
     const context = useContext(AppContext);
+    const [theTime, setTheTime] = useState(new Date());
+
+    useEffect(() => {
+        // component did mount
+        const ticker = setInterval(() => seizeTheTime(), 1000);
+
+        // component will unmount
+        return function cleanup() {
+            clearInterval(ticker)
+        };
+    });
+
+    const seizeTheTime = () => {
+        setTheTime(new Date());
+    };
+
     return (
-        <form>
-            <input
-                type="text"
-                placeholder="Search..."
-                value={context.filterText}
-                onChange={(e) => context.handleFilterTextChange(e.target.value)}
-            />
-            <p>
+        <React.Fragment>
+            <div className={"theThinkingClock"}>
+                <h4>Welcome!</h4>
+                <h5>It
+                    is {theTime !== undefined && theTime !== null ? theTime.toLocaleTimeString() : ' time to go!'}</h5>
+            </div>
+            <form>
                 <input
-                    type="checkbox"
-                    checked={context.inStockOnly}
-                    onChange={(e) => context.handleInStockChange(e.target.checked)}
+                    type="text"
+                    placeholder="Search..."
+                    value={context.filterText}
+                    onChange={(e) => context.handleFilterTextChange(e.target.value)}
                 />
-                {' '}
-                Only show products in stock
-            </p>
-        </form>
+                <p>
+                    <input
+                        type="checkbox"
+                        checked={context.inStockOnly}
+                        onChange={(e) => context.handleInStockChange(e.target.checked)}
+                    />
+                    {' '}
+                    Only show products in stock
+                </p>
+            </form>
+        </React.Fragment>
     )
 };
 
