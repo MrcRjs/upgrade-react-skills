@@ -1,32 +1,30 @@
-import React, {Component, useContext} from 'react'
+import React, {Component, useContext, useState} from 'react'
 import './App.css'
 
 const AppContext = React.createContext(undefined, undefined);
 
-class ProductTableProvider extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            filterText: '',
-            inStockOnly: false,
-            products: {PRODUCTS},
-            handleFilterTextChange: (filterText) => {
-                this.setState({filterText: filterText})
-            },
-            handleInStockChange: (inStockOnly) => {
-                this.setState({inStockOnly: inStockOnly})
-            }
-        }
-    }
+const ProductTableProvider = props => {
+    const [filterText, setFilterText] = useState('');
+    const [inStockOnly, setInStockOnly] = useState(false);
+    const [products] = useState({PRODUCTS});
 
-    render() {
-        return (
-            <AppContext.Provider value={this.state}>
-                {this.props.children}
-            </AppContext.Provider>
-        );
-    }
-}
+    return (
+        <AppContext.Provider
+            value = {{
+                filterText: filterText,
+                inStockOnly: inStockOnly,
+                products: products,
+                handleFilterTextChange: filterText => {setFilterText(filterText)},
+                handleInStockChange: inStock => {setInStockOnly(inStock)}
+            }}
+
+        >
+            <div>
+                {props.children}
+            </div>
+        </AppContext.Provider>
+    );
+};
 
 const ProductCategoryRow = props => (
     <tr>
