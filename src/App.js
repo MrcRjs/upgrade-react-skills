@@ -98,33 +98,28 @@ const ProductTable = () => {
     );
 };
 
-class SearchBar extends React.Component {
-    render() {
-        return (
-            <AppContext.Consumer>
-                {context =>
-                    <form>
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            value={context.filterText}
-                            onChange={(e) => context.handleFilterTextChange(e.target.value)}
-                        />
-                        <p>
-                            <input
-                                type="checkbox"
-                                checked={context.inStockOnly}
-                                onChange={(e) => context.handleInStockChange(e.target.checked)}
-                            />
-                            {' '}
-                            Only show products in stock
-                        </p>
-                    </form>
-                }
-            </AppContext.Consumer>
-        )
-    }
-}
+const SearchBar = () => {
+    const context = useContext(AppContext);
+    return (
+        <form>
+            <input
+                type="text"
+                placeholder="Search..."
+                value={context.filterText}
+                onChange={(e) => context.handleFilterTextChange(e.target.value)}
+            />
+            <p>
+                <input
+                    type="checkbox"
+                    checked={context.inStockOnly}
+                    onChange={(e) => context.handleInStockChange(e.target.checked)}
+                />
+                {' '}
+                Only show products in stock
+            </p>
+        </form>
+    )
+};
 
 const PRODUCTS = [
     {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
