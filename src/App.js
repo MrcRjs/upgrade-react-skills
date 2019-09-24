@@ -1,7 +1,33 @@
-import React, { Component } from 'react'
+import React, { Component, useContext } from 'react'
 import './App.css'
 
-// Composability: Level 3
+const AppContext = React.createContext()
+
+class ProductTableProvider extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        filterText: '',
+        inStockOnly: false,
+        products: {PRODUCTS},
+        handleFilterTextChange: (filterText) => {
+          this.setState({filterText: filterText})
+        },
+        handleInStockChange: (inStockOnly) => {
+          this.setState({inStockOnly: inStockOnly})
+        }
+      }
+    }
+
+    render() {
+      return (
+        <AppContext.Provider value={this.state}>
+          {this.props.children}
+        </AppContext.Provider>
+      );
+    }
+}
+
 class ProductCategoryRow extends React.Component {
     render() {
           const category = this.props.category;
@@ -15,7 +41,6 @@ class ProductCategoryRow extends React.Component {
         }
 }
 
-// Composability: Level 3
 class ProductRow extends React.Component {
     render() {
           const product = this.props.product;
@@ -34,16 +59,15 @@ class ProductRow extends React.Component {
         }
 }
 
-// Composability: Level 2
-class ProductTable extends React.Component {
-    render() {
-          const filterText = this.props.filterText;
-          const inStockOnly = this.props.inStockOnly;
+const ProductTable = () => {
+          const context = useContext(AppContext)
+          const filterText = context.filterText;
+          const inStockOnly = context.inStockOnly;
 
           const rows = [];
           let lastCategory = null;
 
-          this.props.products.forEach((product) => {
+          context.products.PRODUCTS.forEach((product) => {
                   if (product.name.indexOf(filterText) === -1) {
                             return;
                           }
@@ -52,7 +76,7 @@ class ProductTable extends React.Component {
                           }
                   if (product.category !== lastCategory) {
                             rows.push(
-                                        
+
                                         // Props: Level 3
                                         <ProductCategoryRow
                                           category={product.category}
@@ -80,103 +104,36 @@ class ProductTable extends React.Component {
                     <tbody>{rows}</tbody>
                   </table>
                 );
-        }
 }
 
-// Composability: Level 2
 class SearchBar extends React.Component {
-    constructor(props) {
-          super(props);
-          // Reactivity: callbacks which flow down to this child user interface component
-          this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
-          this.handleInStockChange = this.handleInStockChange.bind(this);
-        }
-    
-    handleFilterTextChange(e) {
-          this.props.onFilterTextChange(e.target.value);
-        }
-    
-    handleInStockChange(e) {
-          this.props.onInStockChange(e.target.checked);
-        }
-    
     render() {
           return (
+					      <AppContext.Consumer>
+								 {context =>
                   <form>
                     <input
                       type="text"
                       placeholder="Search..."
-                      value={this.props.filterText}
-                      // Reactivity: callback which will bubble up user interaction event values
-                      onChange={this.handleFilterTextChange}
+                      value={context.filterText}
+                      onChange={(e) => context.handleFilterTextChange(e.target.value)}
                     />
                     <p>
                       <input
                         type="checkbox"
-                        checked={this.props.inStockOnly}
-                        // Reactivity: callback which will bubble up user interaction event values
-                        onChange={this.handleInStockChange}
+                        checked={context.inStockOnly}
+                        onChange={(e) => context.handleInStockChange(e.target.checked)}
                       />
                       {' '}
                       Only show products in stock
                     </p>
                   </form>
-                );
+								 }
+					      </AppContext.Consumer>
+                )
         }
 }
 
-// Composability: Level 1
-class FilterableProductTable extends React.Component {
-    constructor(props) {
-          super(props);
-          // State
-          this.state = {
-                  filterText: '',
-                  inStockOnly: false
-                };
-          
-          this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
-          this.handleInStockChange = this.handleInStockChange.bind(this);
-        }
-
-    handleFilterTextChange(filterText) {
-          // Reactivity: this is the event handler triggered via callbacks which flow down to child user interface components
-          this.setState({
-                  filterText: filterText
-                });
-        }
-    
-    handleInStockChange(inStockOnly) {
-          // Reactivity: this is the event handler triggered via callbacks which flow down to child user interface components
-          this.setState({
-                  inStockOnly: inStockOnly
-                })
-        }
-
-    render() {
-          return (
-                  <div>
-                    {/* State: passed as props */}
-                    <SearchBar
-                      filterText={this.state.filterText}
-                      inStockOnly={this.state.inStockOnly}
-                      // Reactivity: callbacks which flow down to child user interface components
-                      onFilterTextChange={this.handleFilterTextChange}
-                      onInStockChange={this.handleInStockChange}
-                    />
-                    {/* Props: Level 2 */}
-                    {/* State: passed as props */}
-                    <ProductTable
-                      products={this.props.products}
-                      filterText={this.state.filterText}
-                      inStockOnly={this.state.inStockOnly}
-                    />
-                  </div>
-                );
-        }
-}
-
-// Data Model, natural breakdown into components 
 const PRODUCTS = [
     {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
     {category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
@@ -189,8 +146,10 @@ const PRODUCTS = [
 class App extends Component {
   render() {
     return (
-      // Props: Level 1
-      <FilterableProductTable products={PRODUCTS} />
+      <ProductTableProvider>
+        <SearchBar />
+        <ProductTable />
+      </ProductTableProvider>
     );
   }
 }
