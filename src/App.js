@@ -1,6 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react'
 import './App.css'
 
+/*
+*
+* Unlike patterns like render props or higher-order components,
+* Hooks do not introduce unnecessary nesting into your component tree.
+*
+* - Dan Abramov
+*
+* */
+
 const AppContext = React.createContext(undefined, undefined);
 
 const ProductTableProvider = props => {
