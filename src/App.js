@@ -10,12 +10,16 @@ const ProductTableProvider = props => {
 
     return (
         <AppContext.Provider
-            value = {{
+            value={{
                 filterText: filterText,
                 inStockOnly: inStockOnly,
                 products: products,
-                handleFilterTextChange: filterText => {setFilterText(filterText)},
-                handleInStockChange: inStock => {setInStockOnly(inStock)}
+                handleFilterTextChange: filterText => {
+                    setFilterText(filterText)
+                },
+                handleInStockChange: inStock => {
+                    setInStockOnly(inStock)
+                }
             }}
 
         >
