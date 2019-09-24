@@ -1,4 +1,4 @@
-import React, {Component, useContext, useState} from 'react'
+import React, {useContext, useState} from 'react'
 import './App.css'
 
 const AppContext = React.createContext(undefined, undefined);
