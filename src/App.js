@@ -132,16 +132,14 @@ const PRODUCTS = [
     {category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
 ];
 
-class App extends Component {
-    render() {
-        return (
-            <ProductTableProvider>
-                <SearchBar/>
-                <ProductTable/>
-            </ProductTableProvider>
-        );
-    }
-}
+
+const App = () => (
+    <ProductTableProvider>
+        <SearchBar/>
+        <ProductTable/>
+    </ProductTableProvider>
+);
+
 
 export default App;
 
